@@ -78,5 +78,25 @@ const editNote = async (req, res) => {
       res.status(500).json({ success: false, message: "Server error: " + error.message });
     }
   };
+  const getNotes = async (req, res) => {
+    try {
+      const userId = req.userId;
+      const role = req.rootUser.role;
   
-module.exports={addNote,editNote,deleteNote}
+      let notes;
+  
+      if (role === "admin") {
+        
+        notes = await Note.find().sort({ createdAt: -1 }); 
+      } else {
+        
+        notes = await Note.find({ userId }).sort({ createdAt: -1 });
+      }
+  
+      res.status(200).json({ success: true, notes });
+  
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Server error: " + error.message });
+    }
+  };
+module.exports={addNote,editNote,deleteNote,getNotes}
