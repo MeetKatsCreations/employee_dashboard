@@ -37,18 +37,18 @@ const userSchema = new mongoose.Schema({
         enum: ['admin', 'employee'], 
         default: 'employee' 
       },
-    // tokens: [
-    //     {
-    //         token: {
-    //             type: String,
-    //             required: true,
-    //         }
-    //     }
-    // ],
+    tokens: [
+        {
+            token: {
+                type: String,
+                required: true,
+            }
+        }
+    ],
 
-    // verifytoken:{
-    //     type:String,
-    // }
+    verifytoken:{
+        type:String,
+    }
 });
 
 
@@ -66,24 +66,23 @@ userSchema.pre("save", async function (next) {
 });
 
 
-// // token generate
-// userSchema.methods.generateAuthtoken = async function () {
-//     try {
-//         let token23 = jwt.sign({ _id: this._id }, keysecret, {
-//             expiresIn: "1d"
-//         });
 
-//         this.tokens = this.tokens.concat({ token: token23 });
-//         await this.save();
-//         return token23;
-//     } catch (error) {
-//         res.status(422).json(error)
-//     }
-// }
+userSchema.methods.generateAuthtoken = async function () {
+    try {
+        let token23 = jwt.sign({ _id: this._id }, keysecret, {
+            expiresIn: "1d"
+        });
+
+        this.tokens = this.tokens.concat({ token: token23 });
+        await this.save();
+        return token23;
+    } catch (error) {
+        res.status(422).json(error)
+    }
+}
 
 
-// createing model
+
 module.exports=mongoose.model('users',userSchema)
 
 
-// if (this.isModified("password")) {    }
