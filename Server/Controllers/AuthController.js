@@ -10,10 +10,13 @@ const registerUser = async (req, res) => {
     try {
         const preuser = await users.findOne({ email: email })
         if (preuser) {
-            res.status(422).json({ error: "This Email is  already exists" })
+            return res.status(422).json({ error: "This Email  already exists" });
         }
         else if (password !== cpassword) {
             res.status(422).json({ error: "password and confirm password does not matches" })
+        }else if(password.length<6){
+            res.status(422).json({ error: "password must be of length 6." })
+
         } else {
             const finalUser = new users({
                 name, email, password, cpassword,role
