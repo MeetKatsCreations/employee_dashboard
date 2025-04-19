@@ -34,14 +34,14 @@ const registerUser = async (req, res) => {
 const loginUser= async (req, res) => {
    
 
-    const { email, password } = req.body;
+    const { email, password,role } = req.body;
 
-    if (!email || !password) {
+    if (!email || !password || !role) {
         return res.status(422).json({ error: "fill all the details" })
     }
 
     try {
-       const userValid = await users.findOne({email:email});
+       const userValid = await users.findOne({email:email,role:role});
 
         if(userValid){
 
@@ -67,7 +67,7 @@ const loginUser= async (req, res) => {
                 return res.status(201).json({ status: 201,success: true,message:"user successfully LoggedIn", result:result })
             }
         }else{
-            return res.status(500).json({success:false,message:"Email not registered"})
+            return res.status(500).json({success:false,message:"Email not registered with this role"})
         }
 
     } catch (error) {
@@ -80,7 +80,8 @@ const loginUser= async (req, res) => {
 const validUser=async(req,res)=>{
     try {
         const ValidUserOne = await users.findOne({_id:req.userId});
-        res.status(201).json({status:201,ValidUserOne});
+        res.status(200).json({ user: ValidUserOne });
+
     } catch (error) {
         res.status(401).json({status:401,error});
     }
