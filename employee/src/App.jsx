@@ -7,54 +7,62 @@ import AdminSignup from './pages/AdminSignup'
 import EmployeeDashboard from './Pages/EmployeeDashboard'
 import AdminDashboard from './Pages/AdminDashboard'
 import PrivateRoute from './components/PrivateRoute'
-import { useAuth } from './context/AuthContext'
+import Sidebar from './components/Sidebar';
+import Profile from './Pages/Profile';
+import Tasks from './Pages/Tasks';
+import Calendar from './Pages/Calendar';
+import Settings from './Pages/Settings';
+import Issues from './Pages/Issues';
+import DashboardLayout from './components/DashboardLayout.jsx';
+import { useAuth } from './Context/AuthContext'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 function App() {
-  const { user,loading } = useAuth();
+  const { user, loading } = useAuth();
   if (loading) return <div>Loading...</div>;
   return (
     <>
-    <Router>
-      <Routes>
-      <Route
-          path="/"
-          element={
-            user ? (
-              user.role === 'admin' ? (
-                <Navigate to="/admin/dashboard" />
-              ) : (
-                <Navigate to="/employee/dashboard" />
-              )
-            ) : (
-              <Navigate to="/employee/login" />
-            )
-          }
-        />        <Route path="/employee/login" element={<EmployeeLogin />} />
-        <Route path="/employee/signup" element={<EmployeeSignup />} />
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin/signup" element={<AdminSignup />} />
-        <Route
-          path="/employee/dashboard"
-          element={
-            <PrivateRoute role="employee">
-              <EmployeeDashboard />
-            </PrivateRoute>
-          }
-        />
+      <Router>
+        <Routes>
+          <Route path="/employee/login" element={<EmployeeLogin />} />
+          <Route path="/employee/signup" element={<EmployeeSignup />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/signup" element={<AdminSignup />} />
+          <Route
+            path="/employee"
+            element={
+              <PrivateRoute role="employee">
+                <DashboardLayout />
+              </PrivateRoute>
+            }
+          >
+            <Route path="dashboard" element={<EmployeeDashboard />} />
+            <Route path="tasks" element={<Tasks />} />
+            <Route path="calendar" element={<Calendar />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="issues" element={<Issues />} />
+          </Route>
 
-        <Route
-          path="/admin/dashboard"
-          element={
-            <PrivateRoute role="admin">
-              <AdminDashboard />
-            </PrivateRoute>
-          }
-        />
+          <Route
+            path="/admin"
+            element={
+              <PrivateRoute role="admin">
+                <DashboardLayout />
+              </PrivateRoute>
+            }
+          >
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="tasks" element={<Tasks />} />
+            <Route path="calendar" element={<Calendar />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="issues" element={<Issues />} />
+          </Route>
 
-      </Routes>
-    </Router>
-    <ToastContainer position="top-right" autoClose={3000} />
+        </Routes>
+      </Router>
+      <ToastContainer position="top-right" autoClose={3000} />
     </>
   )
 }

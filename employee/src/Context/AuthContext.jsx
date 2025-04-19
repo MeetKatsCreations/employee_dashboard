@@ -31,7 +31,6 @@ export const AuthProvider = ({ children }) => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log("Sent Headers:", response.headers);
             const data = await response.json();
 
             if (response.ok) {
