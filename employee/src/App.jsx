@@ -17,6 +17,7 @@ import DashboardLayout from './components/DashboardLayout.jsx';
 import { useAuth } from './Context/AuthContext'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import RedirectToDashboard from './components/RedirectToDashboard.jsx'
 function App() {
   const { user, loading } = useAuth();
   if (loading) return <div>Loading...</div>;
@@ -24,6 +25,7 @@ function App() {
     <>
       <Router>
         <Routes>
+        <Route path="/" element={<RedirectToDashboard />} />
           <Route path="/employee/login" element={<EmployeeLogin />} />
           <Route path="/employee/signup" element={<EmployeeSignup />} />
           <Route path="/admin/login" element={<AdminLogin />} />
