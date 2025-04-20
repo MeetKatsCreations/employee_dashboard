@@ -7,6 +7,7 @@ const keysecret = process.env.SECRET_KEY
 const authenticate = async (req, res, next) => {
 
     try {
+        console.log("Incoming Headers:", req.headers);
         const authHeader = req.headers.authorization;
 
         if (!authHeader || !authHeader.startsWith("Bearer ")) {

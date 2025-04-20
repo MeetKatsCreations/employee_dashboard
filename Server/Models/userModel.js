@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique:true,
+        unique: true,
         validate(value) {
             if (!validator.isEmail(value)) {
                 throw new Error("not valid email")
@@ -32,11 +32,37 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength: 6
     },
-    role: { 
-        type: String, 
-        enum: ['admin', 'employee'], 
-        default: 'employee' 
+    role: {
+        type: String,
+        enum: ['admin', 'employee'],
+        default: 'employee'
+    },
+    about: {
+        type: String,
+        default: ""
+    },
+    contactNo: {
+        type: String,
+        validate: {
+          validator: function (v) {
+            // Allow empty or valid 10-digit numbers
+            return v === "" || /^[0-9]{10}$/.test(v);
+          },
+          message: (props) => `${props.value} is not a valid phone number!`
+        },
+        default: ""
       },
+      
+    skills: {
+        type: [String],
+        default: []
+    },
+
+    title: {
+        type: String,
+        default: ""
+    },
+
     tokens: [
         {
             token: {
@@ -46,8 +72,8 @@ const userSchema = new mongoose.Schema({
         }
     ],
 
-    verifytoken:{
-        type:String,
+    verifytoken: {
+        type: String,
     }
 });
 
@@ -67,7 +93,7 @@ userSchema.pre("save", async function (next) {
 
 
 
-userSchema.methods.generateAuthtoken = async function () {
+userSchema.methods.generateAuthtoken = async function (req, res) {
     try {
         let token23 = jwt.sign({ _id: this._id }, keysecret, {
             expiresIn: "1d"
@@ -83,6 +109,6 @@ userSchema.methods.generateAuthtoken = async function () {
 
 
 
-module.exports=mongoose.model('users',userSchema)
+module.exports = mongoose.model('users', userSchema)
 
 
