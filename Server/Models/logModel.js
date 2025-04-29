@@ -1,29 +1,19 @@
 const mongoose = require("mongoose");
 
 const noteSchema = new mongoose.Schema({
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "users",
-        required: true
-    },
-    role: {
-        type: String,
-        enum: ['admin', 'employee'],
-        required: true
-    },
-    title: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    description: {
-        type: String,
-        default: ""
-    },
-    date: {
-        type: Date,
-        default: Date.now
-    }
-});
+  title: { type: String, required: true },
+  description: String,
+  createdBy: {
+    
+    name: { type: String, required: true },
+   
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  role: { type: String, enum: ["admin", "employee"], required: true },
+}, { timestamps: true });
 
-module.exports = mongoose.model("notes", noteSchema);
+module.exports = mongoose.model("Note", noteSchema);

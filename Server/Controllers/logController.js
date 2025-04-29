@@ -3,15 +3,20 @@ const addNote = async (req, res) => {
     const { title, description } = req.body;
     const userId = req.userId;
     const role = req.rootUser.role;
-
+    const name=req.rootUser.name;
     if (!title) {
         return res.status(422).json({ success: false, message: "Title is required" });
     }
 
     try {
         const newNote = new Note({
+          createdBy: {
             userId,
-            role,
+            name,
+            role
+          },
+          role,
+          userId,
             title,
             description
         });

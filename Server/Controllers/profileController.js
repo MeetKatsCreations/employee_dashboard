@@ -1,6 +1,8 @@
 const users = require("../Models/userModel");
 const validator = require("validator")
 const bcrypt = require("bcryptjs")
+const cloudinary = require("../Middlewares/cloudinary")
+const fs = require("fs")
 const getProfile = async (req, res) => {
   try {
     const userId = req.userId;
@@ -17,60 +19,97 @@ const getProfile = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error: " + error.message });
   }
 };
-const updateProfile = async (req, res) => {
-  try {
-    const userId = req.userId;
-    const { name, newPassword, currentPassword, cpassword, email } = req.body;
+const getPublicIdFromUrl = (url) => {
+  if (typeof url !== "string") {
+    console.error("Invalid profilePic URL:", url);
+    return null;
+  }
 
+  const regex = /https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\/v\d+\/([^/]+)/;
+  const match = url.match(regex);
+  if (match && match[1]) {
+    return match[1];
+  }
+  return null;
+};
+
+const updateProfile = async (req, res) => {
+
+  const userId = req.userId;
+  const updatedFields = req.body;
+  const user = await users.findById(userId);
+
+
+  if (updatedFields.skills && typeof updatedFields.skills === "string") {
+    try {
+      updatedFields.skills = JSON.parse(updatedFields.skills);
+    } catch (e) {
+      console.error("Error parsing skills:", e);
+      return res.status(400).json({ message: "Invalid skills format" });
+    }
+  }
+
+  if (updatedFields.teams && typeof updatedFields.teams === "string") {
+    try {
+      updatedFields.teams = JSON.parse(updatedFields.teams);
+    } catch (e) {
+      console.error("Error parsing teams:", e);
+    }
+  }
+  if (req.file) {
+    if (user.profilePic) {
+
+      const publicId = getPublicIdFromUrl(user.profilePic);
+      if (publicId) {
+        await cloudinary.uploader.destroy(publicId);
+      }
+    }
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: "user_profiles",
+      width: 400,
+      crop: "scale",
+    });
+
+    updatedFields.profilePic = result.secure_url;
+
+    fs.unlinkSync(req.file.path);
+  }
+
+  try {
     const user = await users.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
+    if (updatedFields && typeof updatedFields === 'object') {
+      for (let field of Object.keys(updatedFields)) {
+        if (Object.prototype.hasOwnProperty.call(updatedFields, field)) {
+          if (field === 'email' && updatedFields.email !== user.email) {
+            const existingUser = await users.findOne({ email: updatedFields.email });
+            if (existingUser) {
+              return res.status(400).json({ message: 'Email already in use' });
+            }
+          }
 
-    if (name) user.name = name;
-    if (email && email !== user.email) {
-      if (!validator.isEmail(email)) {
-        return res.status(400).json({ success: false, message: "Invalid email format" });
+
+          if (field === 'skills' && Array.isArray(updatedFields.skills)) {
+            user.skills = updatedFields.skills.map(skill =>
+              typeof skill === "string" ? skill : skill.name
+            );
+          } else {
+            user[field] = updatedFields[field];
+          }
+        }
       }
+      await user.save();
 
-      const existingUser = await users.findOne({ email });
-      if (existingUser) {
-        return res.status(409).json({ success: false, message: "Email already in use" });
-      }
-
-      user.email = email;
+      res.status(200).json({ message: 'Profile updated successfully', user });
+    } else {
+      return res.status(400).json({ message: 'Invalid update data' });
     }
-
-    if (currentPassword || newPassword || cpassword) {
-      if (!currentPassword || !newPassword || !cpassword) {
-        return res.status(400).json({ success: false, message: "Provide all password fields" });
-      }
-
-      const isMatch = await bcrypt.compare(currentPassword, user.password);
-      if (!isMatch) {
-        return res.status(401).json({ success: false, message: "Current password is incorrect" });
-      }
-
-      if (newPassword !== cpassword) {
-        return res.status(400).json({ success: false, message: "New passwords do not match" });
-      }
-
-      if (newPassword.length < 6) {
-        return res.status(400).json({ success: false, message: "Password must be at least 6 characters" });
-      }
-
-
-      user.password = newPassword;
-      user.cpassword = cpassword;
-    }
-
-    await user.save();
-
-    res.status(200).json({ success: true, message: "Profile updated successfully" });
-
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error: " + error.message });
+    console.error('Error updating profile:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 };
 const getAllEmployees = async (req, res) => {
@@ -85,7 +124,7 @@ const getAllEmployees = async (req, res) => {
     res.status(200).json({ success: true, employees });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: 'Internal Server Error',error:err});
+    res.status(500).json({ success: false, message: 'Internal Server Error', error: err });
   }
 };
-module.exports = { getProfile, updateProfile,getAllEmployees }
+module.exports = { getProfile, updateProfile, getAllEmployees }
