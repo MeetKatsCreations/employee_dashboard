@@ -27,7 +27,7 @@ const updateProfile = async (req, res) => {
       if (!user) {
         return res.status(404).json({ success: false, message: "User not found" });
       }
-  
+        
       if (name) user.name = name;
       if (email && email !== user.email) {
         if (!validator.isEmail(email)) {

@@ -8,7 +8,6 @@ const authenticate = async (req, res, next) => {
     if (!token) {
       return res.status(401).json({ status: 401, message: "No token provided" });
     }
-
     const verifytoken = jwt.verify(token, keysecret);
     const rootUser = await users.findOne({ _id: verifytoken._id });
 
@@ -18,7 +17,6 @@ const authenticate = async (req, res, next) => {
     req.rootUser = rootUser;
     req.userId = rootUser._id;
     req.role = rootUser.role;
-
     next();
   } catch (error) {
     res.status(401).json({ status: 401, message: "Unauthorized, invalid token" });
