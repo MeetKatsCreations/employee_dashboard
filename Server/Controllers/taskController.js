@@ -59,4 +59,34 @@ const getAllTasks = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error", err })
   }
 }
-module.exports = { assignTask, getAssignedTasks, getAllTasks }
+const updateTaskStatus = async (req, res) => {
+  const { taskId, status } = req.body;
+  const role=req.role;
+  if(role !== "employee"){
+    return res.status(404).json({message:"Access denied"})
+  }
+  if (!['not started', 'ongoing', 'completed'].includes(status)) {
+    return res.status(400).json({ message: 'Invalid status' });
+  }
+ 
+  try {
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    if (task.assignedTo.toString() !== req.userId.toString()) {
+      return res.status(403).json({ message: 'You are not authorized to update this task' });
+    }
+
+    task.status = status;
+    await task.save();
+
+    res.status(200).json({ message: 'Task status updated', task });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+module.exports = { assignTask, getAssignedTasks, getAllTasks,updateTaskStatus }
