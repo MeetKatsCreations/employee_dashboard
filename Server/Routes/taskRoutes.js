@@ -5,7 +5,7 @@ const { assignTask, getAssignedTasks, updateTaskStatus, getAllTasks } = require(
 
 router.post('/assignTask', authenticate, assignTask);
 
-// router.get('/assignedTasks', authenticate, getAssignedTasks);
+router.get('/assignedTasks', authenticate, getAssignedTasks);
 
 // router.patch('/updateTaskStatus', authenticate, updateTaskStatus);
 

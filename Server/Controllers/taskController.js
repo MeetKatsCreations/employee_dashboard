@@ -34,4 +34,17 @@ const assignTask = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
-module.exports={assignTask}
+const getAssignedTasks = async (req, res) => {
+  const userId = req.userId;
+
+  try {
+    const tasks = await Task.find({ assignedTo: userId }).populate('assignedBy', 'name email');
+    
+    res.status(200).json({ tasks }); // return empty array if no tasks
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+module.exports={assignTask,getAssignedTasks}
