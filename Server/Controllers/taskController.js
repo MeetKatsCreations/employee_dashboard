@@ -4,9 +4,9 @@ const User = require('../Models/userModel');
 const assignTask = async (req, res) => {
   const { title, description, dueDate, assignedTo } = req.body;
   const assignedBy = req.userId;
-  const role=req.role;
-  if(role !== "admin"){
-    return res.status(404).json({message:"Employee can not assign tasks."})
+  const role = req.role;
+  if (role !== "admin") {
+    return res.status(404).json({ message: "Employee can not assign tasks." })
   }
 
   if (!assignedTo || !title || !description || !dueDate) {
@@ -39,12 +39,24 @@ const getAssignedTasks = async (req, res) => {
 
   try {
     const tasks = await Task.find({ assignedTo: userId }).populate('assignedBy', 'name email');
-    
-    res.status(200).json({ tasks }); // return empty array if no tasks
+
+    res.status(201).json({ tasks });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
 
-module.exports={assignTask,getAssignedTasks}
+const getAllTasks = async (req, res) => {
+  try {
+    const role=req.role;
+    if(role !=="admin"){
+      return res.status(404).json({message:"Access denied for fetching task"})
+    }
+    const tasks= await Task.find({});
+    return res.status(200).json({message:"Task fetches successfully",tasks})
+  } catch (err) {
+    return res.status(500).json({ message: "Internal Server Error", err })
+  }
+}
+module.exports = { assignTask, getAssignedTasks, getAllTasks }

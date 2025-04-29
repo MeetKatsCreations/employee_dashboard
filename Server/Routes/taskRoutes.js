@@ -9,6 +9,6 @@ router.get('/assignedTasks', authenticate, getAssignedTasks);
 
 // router.patch('/updateTaskStatus', authenticate, updateTaskStatus);
 
-// router.get('/getAllTasks', authenticate, getAllTasks);
+router.get('/getAllTasks', authenticate, getAllTasks);
 
 module.exports = router;
