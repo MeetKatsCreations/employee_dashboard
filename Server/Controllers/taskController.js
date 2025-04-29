@@ -40,7 +40,7 @@ const getAssignedTasks = async (req, res) => {
   try {
     const tasks = await Task.find({ assignedTo: userId }).populate('assignedBy', 'name email');
 
-    res.status(201).json({ tasks });
+    res.status(200).json({ tasks });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Internal Server Error' });
@@ -68,7 +68,9 @@ const updateTaskStatus = async (req, res) => {
   if (!['not started', 'ongoing', 'completed'].includes(status)) {
     return res.status(400).json({ message: 'Invalid status' });
   }
- 
+  if (!taskId) {
+    return res.status(400).json({ message: 'Task ID is required' });
+  }
   try {
     const task = await Task.findById(taskId);
 
@@ -89,4 +91,50 @@ const updateTaskStatus = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
-module.exports = { assignTask, getAssignedTasks, getAllTasks,updateTaskStatus }
+const getTasksByStatus = async (req, res) => {
+  const { status } = req.query;
+  const role = req.role;
+
+  const allowedStatuses = ['not started', 'ongoing', 'completed'];
+  if (role !== 'admin') {
+    return res.status(403).json({ message: 'Only admin can access this resource' });
+  }
+
+  
+  if (!status || !allowedStatuses.includes(status)) {
+    return res.status(400).json({ message: 'Invalid or missing task status' });
+  }
+
+  try {
+    const tasks = await Task.find({ status })
+      .populate('assignedBy', 'name email')
+      .populate('assignedTo', 'name email'); 
+
+    res.status(200).json({ success: true, tasks });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+
+
+const getTasksByStatusForUser = async (req, res) => {
+  const { status } = req.query;
+  const userId = req.userId; 
+
+  const allowedStatuses = ['not started', 'ongoing', 'completed'];
+  if (!status || !allowedStatuses.includes(status)) {
+    return res.status(400).json({ message: 'Invalid or missing task status' });
+  }
+
+  try {
+    const tasks = await Task.find({ status, assignedTo: userId }).populate('assignedBy', 'name email');
+    res.status(200).json({ success: true, tasks });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+module.exports = { assignTask, getAssignedTasks, getAllTasks,updateTaskStatus,getTasksByStatusForUser,getTasksByStatus }
