@@ -5,7 +5,7 @@ import TaskViewToggle from '../components/Tasks/TaskViewToggle';
 import TaskCard from '../components/Tasks/TaskCardComponent';
 import TaskList from '../components/Tasks/TaskListComponent';
 import CreateTaskForm from '../components/Tasks/CreateTaskForm';
-
+import AssignTaskModal from '../components/Tasks/AssignTaskModal';
 const AdminTaskAssignment = () => {
   const {
     filteredTasks,
@@ -31,9 +31,9 @@ const AdminTaskAssignment = () => {
         </button>
       </header>
 
-      {showForm && (
-        <CreateTaskForm closeForm={() => setShowForm(false)} />
-      )}
+      
+      {showForm && <AssignTaskModal onClose={() => setShowForm(false)} />}
+      
 
       <FilterBar handleFilterChange={handleFilterChange} />
 

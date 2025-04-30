@@ -57,7 +57,7 @@ export const TaskProvider = ({ children }) => {
   };
   const createTask = async (taskData) => {
     try {
-      const res = await axios.post('http://localhost:5000/tasks/assign', taskData, authHeaders);
+      const res = await axios.post('http://localhost:5000/task/assignTask', taskData, authHeaders);
       await fetchAllTasks(); 
       return { success: true, message: res.data.message };
     } catch (err) {
