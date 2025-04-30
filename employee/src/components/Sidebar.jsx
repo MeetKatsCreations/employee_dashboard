@@ -10,6 +10,7 @@ import {
   AlertTriangle,
   ChevronRight,
   ChevronLeft,
+  ClipboardCheck,
   LogOut
 } from 'lucide-react';
 import img from '../assets/logo.jpg';
@@ -23,11 +24,13 @@ const Sidebar = () => {
 
   const menuItems = [
     { name: 'Overview', icon: <Home size={20} />, path: `${baseRoute}/dashboard` },
-    { name: 'Profile', icon: <User size={20} />, path: `${baseRoute}/profile` },
-    { name: 'Tasks', icon: <CheckSquare size={20} />, path: `${baseRoute}/tasks` },
+    { name: 'Tasks', icon: <ClipboardCheck size={20} />, path: `${baseRoute}/tasks` },
+    { name: 'Logs', icon: <CheckSquare size={20} />, path: `${baseRoute}/logs` },
     { name: 'Calendar', icon: <Calendar size={20} />, path: `${baseRoute}/calendar` },
     { name: 'Issues', icon: <AlertTriangle size={20} />, path: `${baseRoute}/issues` },
+    { name: 'Profile', icon: <User size={20} />, path: `${baseRoute}/profile` },
     { name: 'Settings', icon: <Settings size={20} />, path: `${baseRoute}/settings` },
+
   ];
 
   const handleLogout = async () => {
@@ -62,19 +65,17 @@ const Sidebar = () => {
           <Link
             key={item.name}
             to={item.path}
-            className={`flex items-center px-4 py-4 ${
-              location.pathname === item.path
+            className={`flex items-center px-4 py-4 ${location.pathname === item.path
                 ? 'bg-orange-100 border-l-4 border-orange-500'
                 : 'hover:bg-orange-50 border-l-4 border-transparent'
-            } transition-all duration-200 transform hover:translate-x-1`}
+              } transition-all duration-200 transform hover:translate-x-1`}
           >
             <span className={`${location.pathname === item.path ? 'text-orange-600' : 'text-gray-500'}`}>
               {item.icon}
             </span>
             {!collapsed && (
-              <span className={`ml-4 ${
-                location.pathname === item.path ? 'font-semibold text-orange-600' : 'text-gray-700'
-              }`}>
+              <span className={`ml-4 ${location.pathname === item.path ? 'font-semibold text-orange-600' : 'text-gray-700'
+                }`}>
                 {item.name}
               </span>
             )}
