@@ -18,6 +18,8 @@ import { useAuth } from './Context/AuthContext'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import RedirectToDashboard from './components/RedirectToDashboard.jsx'
+import EmployeeTaskAssignment from './Pages/EmployeeTaskAssignment.jsx'
+import AdminTaskAssignment from './Pages/AdminTaskAssignment.jsx'
 function App() {
   const { user, loading } = useAuth();
   if (loading) return <div>Loading...</div>;
@@ -39,11 +41,12 @@ function App() {
             }
           >
             <Route path="dashboard" element={<EmployeeDashboard />} />
-            <Route path="tasks" element={<Tasks />} />
+            <Route path="logs" element={<Tasks />} />
             <Route path="calendar" element={<Calendar />} />
             <Route path="profile" element={<Profile />} />
             <Route path="settings" element={<Settings />} />
             <Route path="issues" element={<Issues />} />
+            <Route path="tasks" element={<EmployeeTaskAssignment />} />
           </Route>
 
           <Route
@@ -55,11 +58,13 @@ function App() {
             }
           >
             <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="tasks" element={<Tasks />} />
+            <Route path="logs" element={<Tasks />} />
             <Route path="calendar" element={<Calendar />} />
             <Route path="profile" element={<Profile />} />
             <Route path="settings" element={<Settings />} />
             <Route path="issues" element={<Issues />} />
+            <Route path="tasks" element={<AdminTaskAssignment />} />
+
           </Route>
 
         </Routes>
