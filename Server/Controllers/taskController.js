@@ -49,21 +49,23 @@ const getAssignedTasks = async (req, res) => {
 
 const getAllTasks = async (req, res) => {
   try {
-    const role=req.role;
-    if(role !=="admin"){
-      return res.status(404).json({message:"Access denied for fetching task"})
+    const role = req.role;
+    if (role !== "admin") {
+      return res.status(404).json({ message: "Access denied for fetching task" })
     }
-    const tasks= await Task.find({});
-    return res.status(200).json({message:"Task fetches successfully",tasks})
+    const tasks = await Task.find({})
+      .populate('assignedTo', 'name email')
+      .populate('assignedBy', 'name email');
+    return res.status(200).json({ message: "Task fetches successfully", tasks })
   } catch (err) {
     return res.status(500).json({ message: "Internal Server Error", err })
   }
 }
 const updateTaskStatus = async (req, res) => {
   const { taskId, status } = req.body;
-  const role=req.role;
-  if(role !== "employee"){
-    return res.status(404).json({message:"Access denied"})
+  const role = req.role;
+  if (role !== "employee") {
+    return res.status(404).json({ message: "Access denied" })
   }
   if (!['not started', 'ongoing', 'completed'].includes(status)) {
     return res.status(400).json({ message: 'Invalid status' });
@@ -100,7 +102,7 @@ const getTasksByStatus = async (req, res) => {
     return res.status(403).json({ message: 'Only admin can access this resource' });
   }
 
-  
+
   if (!status || !allowedStatuses.includes(status)) {
     return res.status(400).json({ message: 'Invalid or missing task status' });
   }
@@ -108,7 +110,7 @@ const getTasksByStatus = async (req, res) => {
   try {
     const tasks = await Task.find({ status })
       .populate('assignedBy', 'name email')
-      .populate('assignedTo', 'name email'); 
+      .populate('assignedTo', 'name email');
 
     res.status(200).json({ success: true, tasks });
   } catch (error) {
@@ -121,7 +123,7 @@ const getTasksByStatus = async (req, res) => {
 
 const getTasksByStatusForUser = async (req, res) => {
   const { status } = req.query;
-  const userId = req.userId; 
+  const userId = req.userId;
 
   const allowedStatuses = ['not started', 'ongoing', 'completed'];
   if (!status || !allowedStatuses.includes(status)) {
@@ -137,4 +139,4 @@ const getTasksByStatusForUser = async (req, res) => {
   }
 };
 
-module.exports = { assignTask, getAssignedTasks, getAllTasks,updateTaskStatus,getTasksByStatusForUser,getTasksByStatus }
+module.exports = { assignTask, getAssignedTasks, getAllTasks, updateTaskStatus, getTasksByStatusForUser, getTasksByStatus }
