@@ -4,26 +4,36 @@ import axios from 'axios';
 const TaskContext = createContext();
 
 export const TaskProvider = ({ children }) => {
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState([]);  
+  const [filteredTasks, setFilteredTasks] = useState([]);  
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState('card');  
+  const [filter, setFilter] = useState('');  
 
   const token = localStorage.getItem('userToken');
 
-  
   const authHeaders = {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   };
 
-  
   const fetchAllTasks = async () => {
     try {
       const res = await axios.get('http://localhost:5000/task/getAllTasks', authHeaders);
-      setTasks(res.data.tasks);
+      setTasks(res.data.tasks); 
+      setFilteredTasks(res.data.tasks);  
     } catch (err) {
       console.error('Error fetching all tasks:', err.response?.data?.message || err.message);
+    }
+  };
+  const fetchTasksByStatus = async (status) => {
+    try {
+      const res = await axios.get(`http://localhost:5000/task/getTasksByStatus?status=${status}`, authHeaders);
+      setFilteredTasks(res.data.tasks); 
+    } catch (err) {
+      console.error('Error fetching tasks by status:', err.response?.data?.message || err.message);
     }
   };
 
@@ -32,12 +42,11 @@ export const TaskProvider = ({ children }) => {
     try {
       const res = await axios.get('http://localhost:5000/task/assignedTasks', authHeaders);
       setTasks(res.data.tasks);
+      setFilteredTasks(res.data.tasks);  
     } catch (err) {
       console.error('Error fetching assigned tasks:', err.response?.data?.message || err.message);
     }
   };
-
-  
   const fetchEmployees = async () => {
     try {
       const res = await axios.get('http://localhost:5000/profile/getEmployees', authHeaders);
@@ -46,8 +55,6 @@ export const TaskProvider = ({ children }) => {
       console.error('Error fetching employees:', err.response?.data?.message || err.message);
     }
   };
-
-  
   const createTask = async (taskData) => {
     try {
       const res = await axios.post('http://localhost:5000/tasks/assign', taskData, authHeaders);
@@ -61,6 +68,18 @@ export const TaskProvider = ({ children }) => {
       };
     }
   };
+  const handleFilterChange = (status) => {
+    setFilter(status);
+
+    if (status === '') {
+      fetchAllTasks();
+    } else {
+      fetchTasksByStatus(status);
+    }
+  };
+  const toggleView = (view) => {
+    setViewMode(view);
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -72,18 +91,22 @@ export const TaskProvider = ({ children }) => {
     };
 
     init();
-  }, []);
+  }, [token]);
 
   return (
     <TaskContext.Provider
       value={{
         tasks,
+        filteredTasks,  
         employees,
         fetchEmployees,
         fetchAllTasks,
         fetchAssignedTasks,
         createTask,
         loading,
+        viewMode,
+        toggleView,
+        handleFilterChange,
       }}
     >
       {children}
