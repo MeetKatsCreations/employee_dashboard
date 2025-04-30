@@ -20,26 +20,24 @@ export const AuthProvider = ({ children }) => {
     }, []);
     const fetchUser = async (token) => {
         try {
-            if (!token) {
-                logout();
-                return;
-            }
-
             const response = await fetch("http://localhost:5000/auth/validUser", {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
+    
             const data = await response.json();
-
-            if (response.ok) {
-                setUser(data.user);
-                localStorage.setItem("user", JSON.stringify(data.user));
+            console.log("Valid user response:", data);
+    
+            if (response.ok && data.ValidUserOne) {
+                setUser(data.ValidUserOne);
+                localStorage.setItem("user", JSON.stringify(data.ValidUserOne));
             } else {
                 logout();
             }
         } catch (error) {
+            console.error("Error in fetchUser:", error);
             logout();
         } finally {
             setLoading(false);
