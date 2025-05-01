@@ -1,20 +1,21 @@
 import { useState, useEffect } from 'react';
-import { useProfile } from '../context/ProfileContext';  
+import { useProfile } from '../context/ProfileContext';
 import ProfileHeader from '../components/profile/ProfileHeader';
 import ProfileCard from '../components/profile/ProfileCard';
 import AboutSection from '../components/profile/AboutSection';
 import TeamsSection from '../components/profile/TeamsSection';
 import SkillsSection from '../components/profile/SkillsSection';
 import SkillsModal from '../components/profile/SkillsModal';
-
+import AdditionalInfoSection from '../components/profile/AdditionalInfoSection';
+import { toast } from 'react-toastify'
 const Profile = () => {
-  const { profile, updateProfile, loading } = useProfile();  
+  const { profile, updateProfile, loading } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [showSkillsModal, setShowSkillsModal] = useState(false);
   const [editableProfile, setEditableProfile] = useState(null);
   const [selectedSkills, setSelectedSkills] = useState([]);
 
- 
+
   useEffect(() => {
     if (isEditing && profile) {
       setEditableProfile({ ...profile });
@@ -44,11 +45,22 @@ const Profile = () => {
         updatedFields[key] = editableProfile[key];
       }
     }
+    if (updatedFields.birthday) {
+      const birthdayDate = new Date(updatedFields.birthday);
+      if (birthdayDate > new Date()) {
+        toast.error('Birthday cannot be in the future');
+        return;
+      }
+    }
+    if (updatedFields.location && updatedFields.location.trim().length === 0) {
+      toast.error('Location cannot be empty');
+      return;
+    }
     if (editableProfile.profilePicFile) {
       updatedFields.profilePicFile = editableProfile.profilePicFile;
     }
     if (Object.keys(updatedFields).length > 0) {
-      updateProfile(updatedFields);  
+      updateProfile(updatedFields);
     }
 
     setIsEditing(false);
@@ -57,7 +69,7 @@ const Profile = () => {
 
   const cancelEdit = () => {
     setIsEditing(false);
-    setEditableProfile(profile);  
+    setEditableProfile(profile);
   };
 
   const handleProfilePicChange = (e) => {
@@ -67,8 +79,8 @@ const Profile = () => {
       reader.onloadend = () => {
         setEditableProfile((prev) => ({
           ...prev,
-          profilePic: reader.result, 
-          profilePicFile: file,      
+          profilePic: reader.result,
+          profilePicFile: file,
         }));
         console.log("Updated profilePicFile:", file);
       };
@@ -77,7 +89,7 @@ const Profile = () => {
   };
 
 
- 
+
   const removeSkill = (skillId) => {
     setEditableProfile({
       ...editableProfile,
@@ -163,60 +175,66 @@ const Profile = () => {
   }
   return (
     <div className='bg-orange-50 min-h-screen'>
- <div className="py-8 px-4 md:px-8 max-w-6xl mx-auto">
-      <ProfileHeader
-        isEditing={isEditing}
-        saveChanges={saveChanges}
-        cancelEdit={cancelEdit}
-        setIsEditing={setIsEditing}
-      />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <ProfileCard
-          profile={profile}
-          editableProfile={editableProfile}
+      <div className="py-8 px-4 md:px-8 max-w-6xl mx-auto">
+        <ProfileHeader
           isEditing={isEditing}
-          handleProfilePicChange={handleProfilePicChange}
-          handleInputChange={handleInputChange}
-          availableDesignations={availableDesignations}
+          saveChanges={saveChanges}
+          cancelEdit={cancelEdit}
+          setIsEditing={setIsEditing}
         />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-       
-        <div className="lg:col-span-2 space-y-6">
-          <AboutSection
-            bio={isEditing ? editableProfile?.bio ?? '' : profile?.bio ?? ''}
+          <ProfileCard
+            profile={profile}
+            editableProfile={editableProfile}
             isEditing={isEditing}
+            handleProfilePicChange={handleProfilePicChange}
             handleInputChange={handleInputChange}
+            availableDesignations={availableDesignations}
           />
 
-          {/* <TeamsSection
+
+          <div className="lg:col-span-2 space-y-6">
+            <AboutSection
+              bio={isEditing ? editableProfile?.bio ?? '' : profile?.bio ?? ''}
+              isEditing={isEditing}
+              handleInputChange={handleInputChange}
+            />
+
+            {/* <TeamsSection
             teams={isEditing ? editableProfile?.teams ?? [] : profile?.teams ?? []}
             isEditing={isEditing}
           /> */}
 
-          <SkillsSection
-            skills={isEditing ? editableProfile.skills : profile.skills}
-            isEditing={isEditing}
-            removeSkill={removeSkill}
-            openSkillsModal={() => setShowSkillsModal(true)}
-          />
+            <SkillsSection
+              skills={isEditing ? editableProfile.skills : profile.skills}
+              isEditing={isEditing}
+              removeSkill={removeSkill}
+              openSkillsModal={() => setShowSkillsModal(true)}
+            />
+            <AdditionalInfoSection
+              profile={profile}
+              editableProfile={editableProfile}
+              isEditing={isEditing}
+              handleInputChange={handleInputChange}
+            />
+          </div>
         </div>
-      </div>
 
-     
-      {showSkillsModal && (
-        <SkillsModal
-          availableSkills={availableSkills}
-          editableProfile={editableProfile}
-          selectedSkills={selectedSkills}
-          toggleSkillSelection={toggleSkillSelection}
-          addSelectedSkills={addSelectedSkills}
-          closeModal={() => setShowSkillsModal(false)}
-        />
-      )}
+
+        {showSkillsModal && (
+          <SkillsModal
+            availableSkills={availableSkills}
+            editableProfile={editableProfile}
+            selectedSkills={selectedSkills}
+            toggleSkillSelection={toggleSkillSelection}
+            addSelectedSkills={addSelectedSkills}
+            closeModal={() => setShowSkillsModal(false)}
+          />
+        )}
+      </div>
     </div>
-    </div>
-   
+
   );
 };
 

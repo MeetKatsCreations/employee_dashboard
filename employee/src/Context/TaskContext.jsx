@@ -98,6 +98,20 @@ export const TaskProvider = ({ children }) => {
       };
     }
   }
+  const deleteEmployee=async(id)=>{
+    try{
+      const res=await axios.delete(`http://localhost:5000/profile/deleteEmployee/${id}`,authHeaders)
+      await fetchEmployees();
+      return { success: true, message: res.data.message };
+    }catch(err){
+      console.error('Error deleting  Employee:', err.response?.data?.message || err.message);
+      return {
+        success: false,
+        message: err.response?.data?.message || 'Failed to create task',
+      };
+    }
+
+  }
   const handleFilterChange = (status) => {
     setFilter(status);
 
@@ -138,7 +152,8 @@ export const TaskProvider = ({ children }) => {
         toggleView,
         handleFilterChange,
         deleteTask,
-        updateTask
+        updateTask,
+        deleteEmployee
       }}
     >
       {children}

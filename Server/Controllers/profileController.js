@@ -48,12 +48,26 @@ const updateProfile = async (req, res) => {
       return res.status(400).json({ message: "Invalid skills format" });
     }
   }
-
+  if (updatedFields.birthday) {
+    const birthdayDate = new Date(updatedFields.birthday);
+    const now = new Date();
+    if (birthdayDate > now) {
+      return res.status(400).json({ message: "Birthday cannot be a future date" });
+    }
+  }
   if (updatedFields.teams && typeof updatedFields.teams === "string") {
     try {
       updatedFields.teams = JSON.parse(updatedFields.teams);
     } catch (e) {
       console.error("Error parsing teams:", e);
+    }
+  }
+  if (updatedFields.type && typeof updatedFields.type === "string") {
+    updatedFields.type = updatedFields.type.replace(/^"(.*)"$/, "$1").toLowerCase();
+  
+    const validTypes = ['wfh', 'wfo', 'Hybrid'];
+    if (!validTypes.includes(updatedFields.type)) {
+      return res.status(400).json({ message: "Invalid work type" });
     }
   }
   if (req.file) {
@@ -127,4 +141,34 @@ const getAllEmployees = async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal Server Error', error: err });
   }
 };
-module.exports = { getProfile, updateProfile, getAllEmployees }
+const deleteEmployee = async (req, res) => {
+  const role = req.role;
+  const employeeId = req.params.id;
+
+  if (role !== 'admin') {
+    return res.status(403).json({ success: false, message: 'Access denied. Only admins can delete employees.' });
+  }
+
+  try {
+    const employee = await users.findById(employeeId);
+
+    if (!employee) {
+      return res.status(404).json({ success: false, message: 'Employee not found' });
+    }
+
+    
+    if (employee.profilePic) {
+      const publicId = getPublicIdFromUrl(employee.profilePic);
+      if (publicId) {
+        await cloudinary.uploader.destroy(publicId);
+      }
+    }
+    await users.findByIdAndDelete(employeeId);
+    res.status(200).json({ success: true, message: 'Employee profile deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting employee:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+module.exports = { getProfile, updateProfile, getAllEmployees,deleteEmployee }
