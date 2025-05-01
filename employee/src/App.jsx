@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import EmployeeLogin from './pages/EmployeeLogin'
 import EmployeeSignup from './pages/EmployeeSignup'
