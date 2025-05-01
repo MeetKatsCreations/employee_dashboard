@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-
+import { useTasks } from '../../Context/TaskContext';
 const TaskCardComponent = ({ task }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { deleteTask } = useTasks();
 
+  const handleDelete = async () => {
+    await deleteTask(task._id);
+    setIsModalOpen(false);
+  };
   return (
     <>
       <div
@@ -53,7 +58,7 @@ const TaskCardComponent = ({ task }) => {
                 {task.description}
               </p>
 
-              <div className="text-gray-700 mt-6 space-y-2">
+              <div className="text-gray-700 mt-8 space-y-2">
                 <p>
                   <strong className="text-orange-600">Status:</strong> {task.status}
                 </p>
@@ -64,6 +69,20 @@ const TaskCardComponent = ({ task }) => {
                   <strong className="text-orange-600">Due Date:</strong>{' '}
                   {new Date(task.dueDate).toLocaleDateString()}
                 </p>
+                <div className="flex justify-end gap-4 pt-4">
+                <button
+                  // onClick={handleEdit}
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              </div>
               </div>
             </div>
           </div>

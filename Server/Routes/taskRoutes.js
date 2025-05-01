@@ -12,6 +12,6 @@ router.patch('/updateTaskStatus', authenticate, updateTaskStatus);
 router.get('/getAllTasks', authenticate, getAllTasks);
 router.get("/getTasksForUser",authenticate,getTasksByStatusForUser)
 router.get("/getTasksByStatus",authenticate,getTasksByStatus)
-router.put("/editTask/:id",authenticate,editTask)
+router.patch("/editTask/:id",authenticate,editTask)
 router.delete("/deleteTask/:id",authenticate,deleteTask)
 module.exports = router;

@@ -30,7 +30,7 @@ const AdminTaskAssignment = () => {
       {showForm && <AssignTaskModal onClose={() => setShowForm(false)} />}
       
 
-      <FilterBar handleFilterChange={handleFilterChange} />
+      <FilterBar handleFilterChange={handleFilterChange}  />
 
       <div className="flex flex-wrap justify-start gap-4">
         {filteredTasks.map((task) => (

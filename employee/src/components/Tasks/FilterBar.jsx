@@ -4,7 +4,7 @@ const FilterBar = ({ handleFilterChange }) => {
   const statuses = ['all', 'not started', 'ongoing', 'completed'];
 
   return (
-    <div className="flex md:items-center space-y-4 md:space-x-4 flex-col my-4 md:flex-row">
+    <div className="flex md:items-center space-y-4 mt-24 md:mt-0 md:space-x-4 flex-col my-4 md:flex-row">
       {statuses.map((status) => {
         const label = status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1);
         return (
