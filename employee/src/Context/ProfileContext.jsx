@@ -36,10 +36,14 @@ export const ProfileProvider = ({ children }) => {
         joinDate:userData.joinDate,
         role: userData.role || 'employee',
         bio: userData.about || '',
+        location:userData.location||'',
+        birthday:userData.birthday,
+        type:userData.type||'',
         teams: userData.teams || [],
         skills: (userData.skills || []).map((skill, idx) => ({ id: idx + 1, name: skill })),
         profilePic: userData.profilePic || '/api/placeholder/400/400', 
       };
+
 
       setProfile(transformedData);
     } catch (err) {
@@ -61,7 +65,11 @@ export const ProfileProvider = ({ children }) => {
       if (updatedData.designation) formData.append("title", updatedData.designation);
       if (updatedData.department) formData.append("department", updatedData.department);
       if (updatedData.teams) formData.append("teams", JSON.stringify(updatedData.teams));
-  
+      if (updatedData.birthday) formData.append("birthday", updatedData.birthday);
+      if (updatedData.location) formData.append("location", updatedData.location);
+      if (updatedData.type) formData.append("type", updatedData.type); 
+      
+
       if (updatedData.skills && updatedData.skills.length > 0) {
         const skills = updatedData.skills.map((skill) =>
           typeof skill === "string" ? skill : skill.name

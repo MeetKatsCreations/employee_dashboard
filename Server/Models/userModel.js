@@ -52,7 +52,19 @@ const userSchema = new mongoose.Schema({
         // },
         default: ""
     },
-
+    type:{
+        type: String,
+        enum: ['wfh', 'wfo',"Hybrid"],
+        default: 'wfh'
+    },
+    location:{
+        type:String,
+        default:""
+    },
+    birthday: {
+        type: Date,
+        default: null
+      },
     skills: {
         type: [String],
         default: []

@@ -31,52 +31,50 @@ const registerUser = async (req, res) => {
     }
 
 }
-const loginUser= async (req, res) => {
-   
+const loginUser = async (req, res) => {
+    const { email, password, role } = req.body;
 
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-        return res.status(422).json({ error: "fill all the details" })
+    if (!email || !password || !role) {
+        return res.status(422).json({ error: "Fill all the details" });
     }
 
     try {
-       const userValid = await users.findOne({email:email});
+        const userValid = await users.findOne({ email: email });
 
-        if(userValid){
+        if (userValid) {
+            
+            if (userValid.role !== role) {
+                return res.status(422).json({ error: "Role mismatch" });
+            }
 
-            const isMatch = await bcrypt.compare(password,userValid.password);
+            const isMatch = await bcrypt.compare(password, userValid.password);
 
-            if(!isMatch){
-                return res.status(422).json({ error: "invalid details"})
-            }else{
-
-                
+            if (!isMatch) {
+                return res.status(422).json({ error: "Invalid details" });
+            } else {
                 const token = await userValid.generateAuthtoken();
-                 
-                
-                res.cookie("usercookie",token,{
-                    expires:new Date(Date.now()+9000000),
-                    httpOnly:true
+
+                res.cookie("usercookie", token, {
+                    expires: new Date(Date.now() + 9000000),
+                    httpOnly: true
                 });
 
                 const result = {
                     userValid,
                     token
-                }
-                return res.status(201).json({ status: 201,success: true,message:"user successfully LoggedIn", result:result })
-            }
-        }else{
-            return res.status(500).json({success:false,message:"Email not registered"})
-        }
+                };
 
+                return res.status(201).json({ status: 201, success: true, message: "User successfully logged in", result: result });
+            }
+        } else {
+            return res.status(500).json({ success: false, message: "Email not registered" });
+        }
     } catch (error) {
         console.log(error);
-       return  res.status(500).json({success: false,message:"Server Error" + error.message });
-
-        
+        return res.status(500).json({ success: false, message: "Server Error" + error.message });
     }
 };
+
 const validUser=async(req,res)=>{
     try {
         const ValidUserOne = await users.findOne({_id:req.userId});
