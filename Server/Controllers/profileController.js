@@ -120,7 +120,7 @@ const getAllEmployees = async (req, res) => {
   }
 
   try {
-    const employees = await users.find({ role: 'employee' }).select('name email role');
+    const employees = await users.find({ role: 'employee' });
     res.status(200).json({ success: true, employees });
   } catch (err) {
     console.error(err);
