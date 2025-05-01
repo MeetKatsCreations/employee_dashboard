@@ -1,9 +1,13 @@
 import React from 'react';
+import { useEffect } from 'react';
 import { useTasks } from '../Context/TaskContext';
 import { toast } from 'react-toastify';
 
 const EmployeeList = () => {
-    const { employees, loading,deleteEmployee } = useTasks();
+    const { employees, loading,deleteEmployee ,fetchEmployees} = useTasks();
+    useEffect(() => {
+        fetchEmployees();
+    }, [fetchEmployees]);
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this employee?')) {
             const response = await deleteEmployee(id);

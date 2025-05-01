@@ -11,17 +11,20 @@ export const TaskProvider = ({ children }) => {
   const [viewMode, setViewMode] = useState('card');
   const [filter, setFilter] = useState('');
 
-  const token = localStorage.getItem('userToken');
 
-  const authHeaders = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+  const authHeaders = () => {
+    const token = localStorage.getItem('userToken');
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
   };
+  
 
   const fetchAllTasks = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/task/getAllTasks', authHeaders);
+      const res = await axios.get('http://localhost:5000/task/getAllTasks', authHeaders());
       setTasks(res.data.tasks);
       setFilteredTasks(res.data.tasks);
     } catch (err) {
@@ -30,17 +33,34 @@ export const TaskProvider = ({ children }) => {
   };
   const fetchTasksByStatus = async (status) => {
     try {
-      const res = await axios.get(`http://localhost:5000/task/getTasksByStatus?status=${status}`, authHeaders);
+      const res = await axios.get(`http://localhost:5000/task/getTasksByStatus?status=${status}`, authHeaders());
       setFilteredTasks(res.data.tasks);
     } catch (err) {
       console.error('Error fetching tasks by status:', err.response?.data?.message || err.message);
     }
   };
 
-
+  const updateTaskStatusByEmployee = async (taskId, status) => {
+    try {
+      const res = await axios.patch(
+        `http://localhost:5000/task/updateTaskStatus`, 
+        { taskId, status },
+        authHeaders()
+      );
+      await fetchAssignedTasks(); 
+      return { success: true, message: res.data.message };
+    } catch (err) {
+      console.error('Error updating task status:', err.response?.data?.message || err.message);
+      return {
+        success: false,
+        message: err.response?.data?.message || 'Failed to update task status',
+      };
+    }
+  };
+  
   const fetchAssignedTasks = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/task/assignedTasks', authHeaders);
+      const res = await axios.get('http://localhost:5000/task/assignedTasks', authHeaders());
       setTasks(res.data.tasks);
       setFilteredTasks(res.data.tasks);
     } catch (err) {
@@ -49,7 +69,7 @@ export const TaskProvider = ({ children }) => {
   };
   const fetchEmployees = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/profile/getEmployees', authHeaders);
+      const res = await axios.get('http://localhost:5000/profile/getEmployees', authHeaders());
       setEmployees(res.data.employees || []);
     } catch (err) {
       console.error('Error fetching employees:', err.response?.data?.message || err.message);
@@ -57,7 +77,7 @@ export const TaskProvider = ({ children }) => {
   };
   const createTask = async (taskData) => {
     try {
-      const res = await axios.post('http://localhost:5000/task/assignTask', taskData, authHeaders);
+      const res = await axios.post('http://localhost:5000/task/assignTask', taskData, authHeaders());
       await fetchAllTasks();
       return { success: true, message: res.data.message };
     } catch (err) {
@@ -73,7 +93,7 @@ export const TaskProvider = ({ children }) => {
       const res = await axios.patch(
         `http://localhost:5000/task/editTask/${id}`,
         updates,
-        authHeaders
+        authHeaders()
       );
       await fetchAllTasks();
       return { success: true, message: res.data.message };
@@ -87,7 +107,7 @@ export const TaskProvider = ({ children }) => {
   };
   const deleteTask = async (id) => {
     try {
-      const res=await axios.delete(`http://localhost:5000/task/deleteTask/${id}`, authHeaders)
+      const res=await axios.delete(`http://localhost:5000/task/deleteTask/${id}`, authHeaders())
       await fetchAllTasks(); 
       return { success: true, message: res.data.message };
     } catch (err) {
@@ -100,7 +120,7 @@ export const TaskProvider = ({ children }) => {
   }
   const deleteEmployee=async(id)=>{
     try{
-      const res=await axios.delete(`http://localhost:5000/profile/deleteEmployee/${id}`,authHeaders)
+      const res=await axios.delete(`http://localhost:5000/profile/deleteEmployee/${id}`,authHeaders())
       await fetchEmployees();
       return { success: true, message: res.data.message };
     }catch(err){
@@ -127,15 +147,26 @@ export const TaskProvider = ({ children }) => {
 
   useEffect(() => {
     const init = async () => {
+      const token = localStorage.getItem('userToken'); // <-- add this line
       if (!token) return setLoading(false);
-
+  
       await fetchEmployees();
-      await fetchAllTasks();
+  
+      const userRole = localStorage.getItem('userRole');
+  
+      if (userRole === 'admin') {
+        await fetchAllTasks();
+      } else {
+        await fetchAssignedTasks();
+      }
+  
       setLoading(false);
     };
-
+  
     init();
-  }, [token]);
+  }, []);
+  
+  
 
   return (
     <TaskContext.Provider
@@ -145,6 +176,7 @@ export const TaskProvider = ({ children }) => {
         employees,
         fetchEmployees,
         fetchAllTasks,
+        updateTaskStatusByEmployee,
         fetchAssignedTasks,
         createTask,
         loading,
