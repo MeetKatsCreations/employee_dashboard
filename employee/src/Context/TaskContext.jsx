@@ -68,7 +68,7 @@ export const TaskProvider = ({ children }) => {
       };
     }
   };
-  const editTask = async (id, updates) => {
+  const updateTask = async (id, updates) => {
     try {
       const res = await axios.patch(
         `http://localhost:5000/task/editTask/${id}`,
@@ -137,7 +137,8 @@ export const TaskProvider = ({ children }) => {
         viewMode,
         toggleView,
         handleFilterChange,
-        deleteTask
+        deleteTask,
+        updateTask
       }}
     >
       {children}

@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { useTasks } from '../../Context/TaskContext';
+import AssignTaskModal from './AssignTaskModal';
 const TaskCardComponent = ({ task }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { deleteTask } = useTasks();
-
+  const [isEditMode, setIsEditMode] = useState(false);
   const handleDelete = async () => {
     await deleteTask(task._id);
     setIsModalOpen(false);
+  };
+  const handleEdit = () => {
+    setIsEditMode(true);
   };
   return (
     <>
@@ -71,7 +75,7 @@ const TaskCardComponent = ({ task }) => {
                 </p>
                 <div className="flex justify-end gap-4 pt-4">
                 <button
-                  // onClick={handleEdit}
+                  onClick={handleEdit}
                   className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                 >
                   Edit
@@ -87,6 +91,15 @@ const TaskCardComponent = ({ task }) => {
             </div>
           </div>
         </div>
+      )}
+      {isEditMode && (
+        <AssignTaskModal
+          onClose={() => {
+            setIsEditMode(false);
+            setIsModalOpen(false);
+          }}
+          existingTask={task}
+        />
       )}
     </>
   );

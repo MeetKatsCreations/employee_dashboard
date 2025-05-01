@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTasks } from '../../Context/TaskContext';
 
-const CreateTaskForm = ({ closeForm }) => {
-  const { employees, createTask } = useTasks();
+const CreateTaskForm = ({ closeForm, existingTask }) => {
+  const { employees, createTask, updateTask } = useTasks();
 
   const [taskData, setTaskData] = useState({
     title: '',
@@ -11,14 +11,32 @@ const CreateTaskForm = ({ closeForm }) => {
     assignedTo: '',
   });
 
+  useEffect(() => {
+    if (existingTask) {
+      setTaskData({
+        title: existingTask.title || '',
+        description: existingTask.description || '',
+        dueDate: existingTask.dueDate?.slice(0, 10) || '',
+        assignedTo: existingTask.assignedTo?._id || '',
+      });
+    }
+  }, [existingTask]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setTaskData((prevData) => ({ ...prevData, [name]: value }));
+    setTaskData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await createTask(taskData);
+
+    let response;
+    if (existingTask) {
+      response = await updateTask(existingTask._id, taskData);
+    } else {
+      response = await createTask(taskData);
+    }
+
     if (response.success) {
       closeForm();
     }
@@ -29,8 +47,6 @@ const CreateTaskForm = ({ closeForm }) => {
       onSubmit={handleSubmit}
       className="space-y-5 bg-white rounded-lg p-4 sm:p-6 md:p-8"
     >
-      
-
       <div>
         <label className="block text-gray-700 font-medium mb-1">Title</label>
         <input
@@ -97,7 +113,7 @@ const CreateTaskForm = ({ closeForm }) => {
           type="submit"
           className="px-4 py-2 rounded-md bg-orange-500 text-white hover:bg-orange-600"
         >
-          Create Task
+          {existingTask ? 'Update Task' : 'Create Task'}
         </button>
       </div>
     </form>
