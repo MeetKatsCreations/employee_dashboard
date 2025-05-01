@@ -138,5 +138,55 @@ const getTasksByStatusForUser = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
+const editTask = async (req, res) => {
+  const { id } = req.params;
+  const { title, description, dueDate, assignedTo } = req.body;
+  const role = req.role;
 
-module.exports = { assignTask, getAssignedTasks, getAllTasks, updateTaskStatus, getTasksByStatusForUser, getTasksByStatus }
+  if (role !== "admin") {
+    return res.status(403).json({ message: "Only admin can edit tasks." });
+  }
+
+  if (!title || !description || !dueDate || !assignedTo) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
+  try {
+    const updatedTask = await Task.findByIdAndUpdate(
+      id,
+      { title, description, dueDate, assignedTo },
+    );
+
+    if (!updatedTask) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res.status(200).json({ message: "Task updated successfully", task: updatedTask });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+const deleteTask = async (req, res) => {
+  const { id } = req.params;
+  const role = req.role;
+
+  if (role !== "admin") {
+    return res.status(403).json({ message: "Only admin can delete tasks." });
+  }
+
+  try {
+    const deleted = await Task.findByIdAndDelete(id);
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res.status(200).json({ message: "Task deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+module.exports = { assignTask, getAssignedTasks, getAllTasks, updateTaskStatus, getTasksByStatusForUser, getTasksByStatus ,editTask,deleteTask}

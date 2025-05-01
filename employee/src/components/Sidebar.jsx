@@ -11,7 +11,8 @@ import {
   ChevronRight,
   ChevronLeft,
   ClipboardCheck,
-  LogOut
+  LogOut,
+  Users 
 } from 'lucide-react';
 import img from '../assets/logo.jpg';
 
@@ -25,12 +26,16 @@ const Sidebar = () => {
 
   const menuItems = [
     { name: 'Overview', icon: <Home size={20} />, path: `${baseRoute}/dashboard` },
+    ...(baseRoute === '/admin'
+      ? [{ name: 'Employees', icon: <Users size={20} />, path: `${baseRoute}/employees` }]
+      : []),
     { name: 'Tasks', icon: <ClipboardCheck size={20} />, path: `${baseRoute}/tasks` },
     { name: 'Logs', icon: <CheckSquare size={20} />, path: `${baseRoute}/logs` },
     { name: 'Calendar', icon: <Calendar size={20} />, path: `${baseRoute}/calendar` },
     { name: 'Issues', icon: <AlertTriangle size={20} />, path: `${baseRoute}/issues` },
     { name: 'Profile', icon: <User size={20} />, path: `${baseRoute}/profile` },
-    { name: 'Settings', icon: <Settings size={20} />, path: `${baseRoute}/settings` },
+    { name: 'Settings', icon: <Settings size={20} />, path: `${baseRoute}/settings` }
+   
   ];
 
   const handleLogout = async () => {

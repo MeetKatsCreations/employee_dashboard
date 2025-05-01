@@ -20,6 +20,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import RedirectToDashboard from './components/RedirectToDashboard.jsx'
 import EmployeeTaskAssignment from './Pages/EmployeeTaskAssignment.jsx'
 import AdminTaskAssignment from './Pages/AdminTaskAssignment.jsx'
+import Employees from './Pages/Employees.jsx'
 function App() {
   const { user, loading } = useAuth();
   if (loading) return <div>Loading...</div>;
@@ -64,6 +65,8 @@ function App() {
             <Route path="settings" element={<Settings />} />
             <Route path="issues" element={<Issues />} />
             <Route path="tasks" element={<AdminTaskAssignment />} />
+            <Route path="employees" element={<Employees/>} />
+
 
           </Route>
 

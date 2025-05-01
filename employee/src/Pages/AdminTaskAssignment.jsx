@@ -1,17 +1,12 @@
 import React, { useState } from 'react';
 import { useTasks } from '../Context/TaskContext';
 import FilterBar from '../components/Tasks/FilterBar';
-import TaskViewToggle from '../components/Tasks/TaskViewToggle';
 import TaskCard from '../components/Tasks/TaskCardComponent';
-import TaskList from '../components/Tasks/TaskListComponent';
-import CreateTaskForm from '../components/Tasks/CreateTaskForm';
 import AssignTaskModal from '../components/Tasks/AssignTaskModal';
 const AdminTaskAssignment = () => {
   const {
     filteredTasks,
     loading,
-    viewMode,
-    toggleView,
     handleFilterChange,
   } = useTasks();
 
