@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useTasks } from '../../Context/TaskContext';
-
+import {  toast } from 'react-toastify';
 const CreateTaskForm = ({ closeForm, existingTask }) => {
-  const { employees, createTask, updateTask } = useTasks();
+  const { employees, createTask, updateTask, fetchEmployees } = useTasks();
 
+  
   const [taskData, setTaskData] = useState({
     title: '',
     description: '',
@@ -12,6 +13,10 @@ const CreateTaskForm = ({ closeForm, existingTask }) => {
   });
 
   useEffect(() => {
+    if (employees.length === 0) {
+      fetchEmployees();
+    }
+
     if (existingTask) {
       setTaskData({
         title: existingTask.title || '',
@@ -20,7 +25,7 @@ const CreateTaskForm = ({ closeForm, existingTask }) => {
         assignedTo: existingTask.assignedTo?._id || '',
       });
     }
-  }, [existingTask]);
+  }, [existingTask, employees.length, fetchEmployees]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,6 +34,15 @@ const CreateTaskForm = ({ closeForm, existingTask }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const selectedDate = new Date(taskData.dueDate);
+    const currentDate = new Date();
+
+    if (selectedDate < currentDate) {
+   
+      toast.error('Due date must be a future date!');
+      return;
+    }
 
     let response;
     if (existingTask) {
@@ -79,20 +93,22 @@ const CreateTaskForm = ({ closeForm, existingTask }) => {
           value={taskData.dueDate}
           onChange={handleChange}
           required
+          min={new Date().toISOString().split('T')[0]} 
           className="w-full px-4 py-2 border border-orange-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
         />
       </div>
-
       <div>
         <label className="block text-gray-700 font-medium mb-1">Assign To</label>
+        
         <select
           name="assignedTo"
           value={taskData.assignedTo}
           onChange={handleChange}
           required
           className="w-full px-4 py-2 border border-orange-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
+          size={5} 
         >
-          <option value="">Select Employee</option>
+          <option value="" disabled>Select Employee</option>
           {employees.map((emp) => (
             <option key={emp._id} value={emp._id}>
               {emp.name}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTasks } from '../Context/TaskContext';
 import FilterBar from '../components/Tasks/FilterBar';
 import TaskCard from '../components/Tasks/TaskCardComponent';
@@ -8,10 +8,13 @@ const AdminTaskAssignment = () => {
     filteredTasks,
     loading,
     handleFilterChange,
+    fetchAllTasks
   } = useTasks();
 
   const [showForm, setShowForm] = useState(false);
-
+  useEffect(() => {
+    fetchAllTasks();
+  }, []);
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -26,11 +29,11 @@ const AdminTaskAssignment = () => {
         </button>
       </header>
 
-      
-      {showForm && <AssignTaskModal onClose={() => setShowForm(false)} />}
-      
 
-      <FilterBar handleFilterChange={handleFilterChange}  />
+      {showForm && <AssignTaskModal onClose={() => setShowForm(false)} />}
+
+
+      <FilterBar handleFilterChange={handleFilterChange} />
 
       <div className="flex flex-wrap justify-start gap-4">
         {filteredTasks.map((task) => (
