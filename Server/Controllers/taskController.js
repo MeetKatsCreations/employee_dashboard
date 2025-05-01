@@ -140,31 +140,32 @@ const getTasksByStatusForUser = async (req, res) => {
 };
 const editTask = async (req, res) => {
   const { id } = req.params;
-  const { title, description, dueDate, assignedTo } = req.body;
   const role = req.role;
 
-  if (role !== "admin") {
-    return res.status(403).json({ message: "Only admin can edit tasks." });
+  if (role !== 'admin') {
+    return res.status(403).json({ message: 'Only admin can edit tasks.' });
   }
 
-  if (!title || !description || !dueDate || !assignedTo) {
-    return res.status(400).json({ message: "Missing required fields" });
+  const updates = req.body;
+
+  if (!updates || Object.keys(updates).length === 0) {
+    return res.status(400).json({ message: 'No updates provided.' });
   }
 
   try {
-    const updatedTask = await Task.findByIdAndUpdate(
-      id,
-      { title, description, dueDate, assignedTo },
-    );
+    const updatedTask = await Task.findByIdAndUpdate(id, updates, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!updatedTask) {
-      return res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({ message: 'Task not found.' });
     }
 
-    res.status(200).json({ message: "Task updated successfully", task: updatedTask });
+    res.status(200).json({ message: 'Task updated successfully.', task: updatedTask });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error('Error updating task:', err);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 };
 const deleteTask = async (req, res) => {
