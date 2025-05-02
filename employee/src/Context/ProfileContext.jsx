@@ -99,6 +99,7 @@ export const ProfileProvider = ({ children }) => {
       console.error("Error updating profile:", err);
     }
   };
+
   
   
 
@@ -111,7 +112,7 @@ export const ProfileProvider = ({ children }) => {
   }, [user]);
 
   return (
-    <ProfileContext.Provider value={{ profile, setProfile, updateProfile, loading }}>
+    <ProfileContext.Provider value={{ profile, setProfile, updateProfile, loading}}>
       {children}
     </ProfileContext.Provider>
   );

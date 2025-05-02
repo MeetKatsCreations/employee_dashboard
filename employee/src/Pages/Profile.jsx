@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useProfile } from '../context/ProfileContext';
+import { useProfile } from '../Context/ProfileContext';
 import ProfileHeader from '../components/profile/ProfileHeader';
 import ProfileCard from '../components/profile/ProfileCard';
 import AboutSection from '../components/profile/AboutSection';
