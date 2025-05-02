@@ -42,11 +42,12 @@ function App() {
           >
             <Route path="dashboard" element={<EmployeeDashboard />} />
             <Route path="logs" element={<Tasks />} />
-            <Route path="calendar" element={<Calendar />} />
             <Route path="profile" element={<Profile />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="issues" element={<Issues />} />
             <Route path="tasks" element={<EmployeeTaskAssignment />} />
+            {/* <Route path="calendar" element={<Calendar />} /> */}
+            {/* <Route path="settings" element={<Settings />} />
+            <Route path="issues" element={<Issues />} /> */}
+            
           </Route>
 
           <Route
@@ -59,12 +60,13 @@ function App() {
           >
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="logs" element={<Tasks />} />
-            <Route path="calendar" element={<Calendar />} />
             <Route path="profile" element={<Profile />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="issues" element={<Issues />} />
             <Route path="tasks" element={<AdminTaskAssignment />} />
             <Route path="employees" element={<Employees/>} />
+            {/* <Route path="calendar" element={<Calendar />} /> */}
+            {/* <Route path="settings" element={<Settings />} />
+            <Route path="issues" element={<Issues />} /> */}
+            
 
 
           </Route>
