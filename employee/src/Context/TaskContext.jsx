@@ -10,8 +10,8 @@ export const TaskProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('card');
   const [filter, setFilter] = useState('');
-
-
+  const[employeeCount,setEmployeeCount]=useState(0);
+ const[assignedTaskCount,setAssignedTaskCount]=useState(0);
   const authHeaders = () => {
     const token = localStorage.getItem('userToken');
     return {
@@ -25,7 +25,9 @@ export const TaskProvider = ({ children }) => {
   const fetchAllTasks = async () => {
     try {
       const res = await axios.get('http://localhost:5000/task/getAllTasks', authHeaders());
-      setTasks(res.data.tasks);
+      const taskList=res.data.tasks||[];
+      setTasks(taskList);
+      setAssignedTaskCount(taskList.length)
       setFilteredTasks(res.data.tasks);
     } catch (err) {
       console.error('Error fetching all tasks:', err.response?.data?.message || err.message);
@@ -70,7 +72,9 @@ export const TaskProvider = ({ children }) => {
   const fetchEmployees = async () => {
     try {
       const res = await axios.get('http://localhost:5000/profile/getEmployees', authHeaders());
-      setEmployees(res.data.employees || []);
+      const employeeList = res.data.employees || [];
+      setEmployees(employeeList);
+      setEmployeeCount(employeeList.length); 
     } catch (err) {
       console.error('Error fetching employees:', err.response?.data?.message || err.message);
     }
@@ -147,12 +151,12 @@ export const TaskProvider = ({ children }) => {
 
   useEffect(() => {
     const init = async () => {
-      const token = localStorage.getItem('userToken'); // <-- add this line
+      const token = localStorage.getItem('userToken'); 
       if (!token) return setLoading(false);
-  
-      await fetchEmployees();
-  
       const userRole = localStorage.getItem('userRole');
+      await fetchEmployees();
+
+      
   
       if (userRole === 'admin') {
         await fetchAllTasks();
@@ -178,6 +182,7 @@ export const TaskProvider = ({ children }) => {
         fetchAllTasks,
         updateTaskStatusByEmployee,
         fetchAssignedTasks,
+        setAssignedTaskCount,
         createTask,
         loading,
         viewMode,
@@ -185,7 +190,9 @@ export const TaskProvider = ({ children }) => {
         handleFilterChange,
         deleteTask,
         updateTask,
-        deleteEmployee
+        deleteEmployee,
+        employeeCount,
+        assignedTaskCount
       }}
     >
       {children}
