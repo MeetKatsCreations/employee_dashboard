@@ -31,11 +31,10 @@ const Sidebar = () => {
       : []),
     { name: 'Tasks', icon: <ClipboardCheck size={20} />, path: `${baseRoute}/tasks` },
     { name: 'Logs', icon: <CheckSquare size={20} />, path: `${baseRoute}/logs` },
-    { name: 'Calendar', icon: <Calendar size={20} />, path: `${baseRoute}/calendar` },
-    { name: 'Issues', icon: <AlertTriangle size={20} />, path: `${baseRoute}/issues` },
     { name: 'Profile', icon: <User size={20} />, path: `${baseRoute}/profile` },
-    { name: 'Settings', icon: <Settings size={20} />, path: `${baseRoute}/settings` }
-   
+    // { name: 'Calendar', icon: <Calendar size={20} />, path: `${baseRoute}/calendar` },
+    // { name: 'Issues', icon: <AlertTriangle size={20} />, path: `${baseRoute}/issues` },
+    // { name: 'Settings', icon: <Settings size={20} />, path: `${baseRoute}/settings` }
   ];
 
   const handleLogout = async () => {
