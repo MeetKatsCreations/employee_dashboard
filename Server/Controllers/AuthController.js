@@ -67,7 +67,7 @@ const loginUser = async (req, res) => {
                 return res.status(201).json({ status: 201, success: true, message: "User successfully logged in", result: result });
             }
         } else {
-            return res.status(500).json({ success: false, message: "Email not registered" });
+            return res.status(500).json({ success: false, error: "Email not registered" });
         }
     } catch (error) {
         console.log(error);

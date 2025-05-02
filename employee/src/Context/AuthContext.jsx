@@ -59,9 +59,8 @@ export const AuthProvider = ({ children }) => {
             }
         } catch (error) {
             const message =
-                error?.response?.data?.message ||
                 error?.response?.data?.error ||
-                'Something went wrong';
+                'Internal Server Error';
 
 
 
@@ -88,11 +87,11 @@ export const AuthProvider = ({ children }) => {
 
                 return { success: true, message: response.data.message };
             } else {
-                return { success: false, message: response.data.error || "Login failed" };
+                return { success: false, message: response.data.error ||  "Login failed" };
             }
         } catch (error) {
 
-            const message = error?.response?.data?.message || "Something went wrong";
+            const message =  error?.response?.data?.error || "Internal Server Error";
 
             return { success: false, message };
 
@@ -112,5 +111,4 @@ export const AuthProvider = ({ children }) => {
         </AuthContext.Provider>
     );
 };
-
 export const useAuth = () => useContext(AuthContext);

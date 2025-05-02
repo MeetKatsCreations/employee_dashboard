@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link ,useNavigate} from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useAuth } from "../Context/AuthContext"
 const LoginForm = ({ userType }) => {
@@ -9,27 +9,22 @@ const LoginForm = ({ userType }) => {
     })
     const { login } = useAuth();
     const navigate = useNavigate();
-    const [error, setError] = useState(null);
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        console.log('Login data:', formData)
         const result = await login(formData, userType);
         if (result.success) {
             toast.success('Logged in successfully!');
             navigate(`/${userType}/dashboard`);
         } else {
-            toast.error(result.message || 'Login failed. Please try again.');
-            
+            toast.error(result.message || 'Internal Server Error');
+
         }
 
     }
-
-
-
     return (
         <form onSubmit={handleSubmit} className="w-full max-w-md mx-auto mt-6">
 
