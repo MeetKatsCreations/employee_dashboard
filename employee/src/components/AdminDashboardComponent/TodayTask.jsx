@@ -17,7 +17,7 @@ const TodayTasks = () => {
       <h2 className="text-2xl font-semibold text-orange-600 mb-4">Tasks Due Today</h2>
      
       <div
-        className="bg-white rounded-xl shadow-lg p-4  border-orange-500 w-50 sm:w-[875px] h-56 "
+        className="bg-white rounded-xl shadow-lg p-4  border-orange-500 w-50 sm:w-[550px] md:w-[650px] lg:w-[875px]  h-48 "
         style={{
           maxHeight: '500px',
           overflowY: 'auto', 

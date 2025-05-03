@@ -8,6 +8,7 @@ import { useTasks } from '../Context/TaskContext';
 import { useNotes } from '../Context/LogContext';
 import TaskStatusChart from '../components/AdminDashboardComponent/TaskStatusChart';
 import TodayTasks from '../components/AdminDashboardComponent/TodayTask';
+import TaskBarChart from '../components/AdminDashboardComponent/TaskBarChart';
 const AdminDashboard = () => {
   const { employeeCount, assignedTaskCount, fetchAllTasks } = useTasks()
   const { noteCount } = useNotes()
@@ -30,6 +31,7 @@ const AdminDashboard = () => {
 
         <TaskStatusChart />
       </div>
+      <TaskBarChart />
     </div>
 
   );
