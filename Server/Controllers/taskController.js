@@ -189,5 +189,25 @@ const deleteTask = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+const taskToday=async(req,res)=>{
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); 
 
-module.exports = { assignTask, getAssignedTasks, getAllTasks, updateTaskStatus, getTasksByStatusForUser, getTasksByStatus ,editTask,deleteTask}
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1); 
+
+    const tasksDueToday = await Task.find({
+      dueDate: {
+        $gte: today,
+        $lt: tomorrow
+      }
+    }).populate('assignedTo assignedBy');
+
+    res.status(200).json({ tasks: tasksDueToday });
+  } catch (error) {
+    console.error('Error fetching today\'s tasks:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+}
+module.exports = { assignTask,taskToday, getAssignedTasks, getAllTasks, updateTaskStatus, getTasksByStatusForUser, getTasksByStatus ,editTask,deleteTask}
