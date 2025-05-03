@@ -25,7 +25,7 @@ const AdminDashboard = () => {
             <SmallCard heading={"total number of tasks assigned"} count={assignedTaskCount} />
             <SmallCard heading={"total number of notes created"} count={noteCount} />
           </div>
-          {/* <TodayTasks /> */}
+          <TodayTasks />
         </div>
 
         <TaskStatusChart />
