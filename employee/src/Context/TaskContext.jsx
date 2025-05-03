@@ -13,6 +13,8 @@ export const TaskProvider = ({ children }) => {
   const[employeeCount,setEmployeeCount]=useState(0);
  const[assignedTaskCount,setAssignedTaskCount]=useState(0);
  const [todayTasks, setTodayTasks] = useState([]);
+ const [taskCountByEmployee, setTaskCountByEmployee] = useState([]);
+
 
   const authHeaders = () => {
     const token = localStorage.getItem('userToken');
@@ -158,7 +160,20 @@ export const TaskProvider = ({ children }) => {
       console.error('Error fetching today\'s tasks:', err.response?.data?.message || err.message);
     }
   };
-  
+  const fetchTaskCountByEmployee = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/task/taskCount',authHeaders());
+      console.log('API Response:', res.data); 
+
+      if (res.data && res.data.success && Array.isArray(res.data.data)) {
+        setTaskCountByEmployee(res.data.data); // <- this should be an array
+      } else {
+        setTaskCountByEmployee([]); // fallback if unexpected format
+      }
+    } catch (err) {
+      console.error('Error fetching task count per employee:', err);
+    }
+  };
   useEffect(() => {
     const init = async () => {
       const token = localStorage.getItem('userToken'); 
@@ -188,12 +203,14 @@ export const TaskProvider = ({ children }) => {
         tasks,
         filteredTasks,
         employees,
+        fetchTaskCountByEmployee,
         fetchEmployees,
         fetchAllTasks,
         todayTasks,
         updateTaskStatusByEmployee,
         fetchAssignedTasks,
         setAssignedTaskCount,
+        taskCountByEmployee,
         createTask,
         loading,
         viewMode,
