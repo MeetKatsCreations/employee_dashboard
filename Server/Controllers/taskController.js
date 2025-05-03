@@ -210,4 +210,48 @@ const taskToday=async(req,res)=>{
     res.status(500).json({ message: 'Server error' });
   }
 }
-module.exports = { assignTask,taskToday, getAssignedTasks, getAllTasks, updateTaskStatus, getTasksByStatusForUser, getTasksByStatus ,editTask,deleteTask}
+const getTaskCountPerEmployee = async (req, res) => {
+  const role = req.role;
+
+  if (role !== 'admin') {
+    return res.status(403).json({ message: 'Only admin can access this resource' });
+  }
+
+  try {
+    const taskCounts = await Task.aggregate([
+      {
+        $group: {
+          _id: '$assignedTo',
+          taskCount: { $sum: 1 },
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'employee',
+        },
+      },
+      {
+        $unwind: '$employee',
+      },
+      {
+        $project: {
+          _id: 0,
+          employeeId: '$employee._id',
+          name: '$employee.name',
+          email: '$employee.email',
+          taskCount: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json({ success: true, data: taskCounts });
+  } catch (error) {
+    console.error('Error fetching task count per employee:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+module.exports = { assignTask,taskToday,getTaskCountPerEmployee, getAssignedTasks, getAllTasks, updateTaskStatus, getTasksByStatusForUser, getTasksByStatus ,editTask,deleteTask}
