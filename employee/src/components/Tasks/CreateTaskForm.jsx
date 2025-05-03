@@ -36,11 +36,13 @@ const CreateTaskForm = ({ closeForm, existingTask }) => {
     e.preventDefault();
 
     const selectedDate = new Date(taskData.dueDate);
+    selectedDate.setHours(0, 0, 0, 0);
+    
     const currentDate = new Date();
-
+    currentDate.setHours(0, 0, 0, 0);
+    
     if (selectedDate < currentDate) {
-   
-      toast.error('Due date must be a future date!');
+      toast.error('Due date must be today or a future date!');
       return;
     }
 

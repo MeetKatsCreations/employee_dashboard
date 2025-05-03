@@ -148,7 +148,16 @@ export const TaskProvider = ({ children }) => {
   const toggleView = (view) => {
     setViewMode(view);
   };
-
+  const filterTasksDueToday = () => {
+    const today = new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD'
+  
+    const dueToday = tasks.filter(task => {
+      const taskDueDate = new Date(task.dueDate).toISOString().split('T')[0];
+      return taskDueDate === today;
+    });
+  
+    setFilteredTasks(dueToday);
+  };
   useEffect(() => {
     const init = async () => {
       const token = localStorage.getItem('userToken'); 
@@ -180,6 +189,7 @@ export const TaskProvider = ({ children }) => {
         employees,
         fetchEmployees,
         fetchAllTasks,
+        filterTasksDueToday,
         updateTaskStatusByEmployee,
         fetchAssignedTasks,
         setAssignedTaskCount,

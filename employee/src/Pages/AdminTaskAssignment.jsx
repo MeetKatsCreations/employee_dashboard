@@ -8,12 +8,14 @@ const AdminTaskAssignment = () => {
     filteredTasks,
     loading,
     handleFilterChange,
-    fetchAllTasks
+    fetchAllTasks,
+    filterTasksDueToday
   } = useTasks();
 
   const [showForm, setShowForm] = useState(false);
   useEffect(() => {
     fetchAllTasks();
+    filterTasksDueToday();
   }, []);
   if (loading) return <div>Loading...</div>;
 
