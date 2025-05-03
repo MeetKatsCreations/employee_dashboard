@@ -26,7 +26,7 @@ const TaskStatusChart = () => {
   ];
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-4 w-48 ml-5 sm:ml-0 sm:w-80 h-[400px] mt-4 flex flex-col items-center">
+    <div className="bg-white rounded-xl shadow-md p-4 w-48 ml-5 sm:ml-0 sm:w-80 h-[435px] mt-4 flex flex-col items-center mb-4 sm:mb-0">
       <h3 className="text-md font-semibold text-gray-700 mb-2">Task Status Overview</h3>
 
       <PieChart width={250} height={200}>
@@ -47,7 +47,7 @@ const TaskStatusChart = () => {
       </PieChart>
 
       
-      <div className="mt-4 w-full px-2  ml-4 sm:ml-20">
+      <div className="mt-12 w-full px-2  ml-4 sm:ml-20">
         {data.map((entry, index) => (
           <div key={entry.name} className="flex items-center space-x-2 mb-1">
             <div

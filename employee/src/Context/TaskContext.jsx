@@ -12,6 +12,8 @@ export const TaskProvider = ({ children }) => {
   const [filter, setFilter] = useState('');
   const[employeeCount,setEmployeeCount]=useState(0);
  const[assignedTaskCount,setAssignedTaskCount]=useState(0);
+ const [todayTasks, setTodayTasks] = useState([]);
+
   const authHeaders = () => {
     const token = localStorage.getItem('userToken');
     return {
@@ -148,16 +150,15 @@ export const TaskProvider = ({ children }) => {
   const toggleView = (view) => {
     setViewMode(view);
   };
-  const filterTasksDueToday = () => {
-    const today = new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD'
-  
-    const dueToday = tasks.filter(task => {
-      const taskDueDate = new Date(task.dueDate).toISOString().split('T')[0];
-      return taskDueDate === today;
-    });
-  
-    setFilteredTasks(dueToday);
+  const fetchTasksDueToday = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/task/taskToday', authHeaders());
+      setTodayTasks(res.data.tasks || []);
+    } catch (err) {
+      console.error('Error fetching today\'s tasks:', err.response?.data?.message || err.message);
+    }
   };
+  
   useEffect(() => {
     const init = async () => {
       const token = localStorage.getItem('userToken'); 
@@ -189,7 +190,7 @@ export const TaskProvider = ({ children }) => {
         employees,
         fetchEmployees,
         fetchAllTasks,
-        filterTasksDueToday,
+        todayTasks,
         updateTaskStatusByEmployee,
         fetchAssignedTasks,
         setAssignedTaskCount,
@@ -202,6 +203,7 @@ export const TaskProvider = ({ children }) => {
         updateTask,
         deleteEmployee,
         employeeCount,
+        fetchTasksDueToday,
         assignedTaskCount
       }}
     >
